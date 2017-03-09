@@ -24,16 +24,16 @@ public class Percolation {
     		throw new IndexOutOfBoundsException("row and col must between 0 to n");
 		if(!this.isOpen(row, col)) {
 			if(col != 1)	//  check left
-				if(!uf.connected(n * (row - 1) + col, n * (row - 1) + col - 1))
+				if(this.isOpen(row, col - 1))
 					uf.union(n * (row - 1) + col, n * (row - 1) + col - 1);
 			if(col != n)	//  check right
-				if(!uf.connected(n * (row - 1) + col, n * (row - 1) + col + 1))
+				if(this.isOpen(row, col + 1))
 					uf.union(n * (row - 1) + col, n * (row - 1) + col + 1);
 			if(row != 1)	//  check up
-				if(!uf.connected(n * (row - 1) + col, n * (row - 2) + col))
+				if(this.isOpen(row - 1, col))
 					uf.union(n * (row - 1) + col, n * (row - 2) + col);
 			if(row != n)	//  check down
-				if(!uf.connected(n * (row - 1) + col, n * row + col))
+				if(this.isOpen(row + 1, col))
 					uf.union(n * (row - 1) + col, n * row + col);
 			grid[row - 1][col - 1] = 1;
 			count++;
@@ -42,14 +42,14 @@ public class Percolation {
     public boolean isOpen(int row, int col) {
     	// is site (row, col) open?
     	if(row < 1 || row > n || col < 1 || col > n)
-    		throw new IndexOutOfBoundsException("row and col must between 0 to n");
+    		throw new IndexOutOfBoundsException("row and col must between 1 to n");
     	return grid[row - 1][col - 1] == 1;
     }
     public boolean isFull(int row, int col) {
     	// is site (row, col) full?
     	if(row < 1 || row > n || col < 1 || col > n)
     		throw new IndexOutOfBoundsException("row and col must between 0 to n");
-    	return uf.connected(0, n * (row - 1) + col);
+    	return this.isOpen(row, col) && uf.connected(0, n * (row - 1) + col);
     }
 	public int numberOfOpenSites() {
 		// number of open sites
