@@ -71,15 +71,18 @@ public class Deque<Item> implements Iterable<Item>{
 		return new DequeIterator();
 	}
 	private class DequeIterator implements Iterator<Item>{
-
+		Node node = first;
 		@Override
 		public boolean hasNext() {
-			return size != 0;
+			return node != null;
 		}
 
 		@Override
 		public Item next() {
-			return removeFirst();
+			if(!hasNext()) throw new NoSuchElementException();
+			Node thisNode = node;
+			node = node.nextNode;
+			return thisNode.item;
 		}
 		
 	}
