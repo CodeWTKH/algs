@@ -8,18 +8,20 @@ import edu.princeton.cs.algs4.StdRandom;
 public class RandomizedQueue<Item> implements Iterable<Item> {
 	private Item[] items;
 	private int size;
+	@SuppressWarnings("unchecked")
 	public RandomizedQueue() {
 		// construct an empty randomized queue
 		this.items = (Item[]) new Object[2];
 	}
 	private void resize(int newSize) {
+		@SuppressWarnings("unchecked")
 		Item[] newItems = (Item[]) new Object[newSize];
 		int index = 0;
-		for(Item item: items) {
-			if(item == null) continue;
+		for (Item item: items) {
+			if (item == null) continue;
 			newItems[index++] = item;
 		}
-		this.items = newItems;
+		items = newItems;
 	}
 	public boolean isEmpty() {
 		// is the queue empty?
@@ -31,28 +33,30 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 	}
 	public void enqueue(Item item) {
 		// add the item
-		if(item == null) throw new NullPointerException();
-		this.items[size++] = item;
-		if(this.items.length == size) resize(2 * this.items.length);
+		if (item == null) throw new NullPointerException();
+		items[size++] = item;
+		if (items.length == size) resize(2 * items.length);
 	}
 	public Item dequeue() {
 		// remove and return a random item
-		if(this.size == 0) throw new NoSuchElementException();
+		if (this.size == 0) throw new NoSuchElementException();
 		int n = StdRandom.uniform(size);
 		Item item = items[n];
 		items[n] = items[size - 1];
 		items[--size] = null;
+		if (size > 0 && items.length >= 4 * size)
+			resize(items.length / 2);
 		return item;
 	}
 	public Item sample() {
 		// return (but do not remove) a random item
-		if(this.size == 0) throw new NoSuchElementException();
+		if (this.size == 0) throw new NoSuchElementException();
 		int n = StdRandom.uniform(size);
 		return items[n];
 	}
 	private class QueueIterator implements Iterator<Item> {
-		int iterSize = size;
-		int[] seq = StdRandom.permutation(size);
+		private int iterSize = size;
+		private int[] seq = StdRandom.permutation(size);
 		@Override
 		public boolean hasNext() {
 			return iterSize != 0;
@@ -60,6 +64,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
 		@Override
 		public Item next() {
+			if (!hasNext()) throw new NoSuchElementException();
 			return items[seq[--size]];
 		}
 		
